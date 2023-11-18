@@ -47,11 +47,16 @@ abstract class ApiService {
         throw BadResponse('No status code received', 0, null);
       }
     } on DioException catch (e, stackTrace) {
-      throw FastException(
-          message: e.message ?? 'Unknown error',
-          statusCode: e.response?.statusCode,
-          trace: stackTrace
-      );
+      if (e.response != null) {
+        return BadResponse(e.response!.statusMessage ?? 'HTTP error', e.response!.statusCode ?? 0, e.response!.data);
+      } else {
+        throw FastException(
+            message: e.message ?? 'Unknown error',
+            statusCode: e.response?.statusCode,
+            trace: stackTrace
+        );
+      }
     }
   }
+
 }
